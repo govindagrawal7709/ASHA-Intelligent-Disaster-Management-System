@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Asha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- Global Variables (Matching Login Page) --- */
+        :root {
+            --primary-dark: #2c3e50;     /* Navy */
+            --secondary-light: #f9f9f9;  /* Softer near-white grey */
+            --accent-green: #f39c12;     /* Orange/Gold */
+            --accent-dark: #e67e22;      /* Deep Orange */
+            --bg-dark: #ffffff;          /* White */
+            --text-light: #ffffff;
+            --text-dark: #34495e;
+            --font-heading: 'Montserrat', sans-serif;
+            --font-body: 'Poppins', sans-serif;
+            --error-red: #E63946;
+            --border-grey: #dcdde1;      /* subtle border */
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+    min-height: auto; /* <--- The only change is here */
+    max-height: 700px;
+    background-color: var(--primary-dark);
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+
+        /* --- Info Panel --- */
+        .info-panel {
+            flex: 1;
+            background: linear-gradient(rgba(44,62,80,0.85), rgba(44,62,80,0.85)),
+                        url('https://source.unsplash.com/800x1200/?hope,community') no-repeat center center/cover;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: var(--text-light);
+        }
+        .info-panel h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            color: var(--accent-green);
+            margin-bottom: 20px;
+        }
+        .info-panel p {
+            font-size: 1.1rem;
+            color: var(--secondary-light);
+        }
+
+        /* --- Form Panel --- */
+        .form-panel {
+            flex: 1;
+            padding: 50px;
+            overflow-y: auto;
+            background-color: var(--bg-dark);
+        }
+        .form-panel h2 {
+            font-family: var(--font-heading);
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-dark);
+        }
+
+        /* --- Form Fields --- */
+        .form-field {
+            margin-bottom: 20px;
+        }
+        .form-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+        .form-field input,
+        .form-field textarea,
+        .form-field select {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-grey);
+            border-radius: 5px;
+            font-family: var(--font-body);
+        }
+        .form-field input:focus,
+        .form-field textarea:focus,
+        .form-field select:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 5px rgba(243,156,18,0.5);
+        }
+
+        /* --- Button --- */
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-green);
+            color: var(--text-light);
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: var(--accent-dark);
+            transform: translateY(-2px);
+        }
+
+        /* --- Django Messages --- */
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .messages li {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        .messages li.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .messages li.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .container { flex-direction: column; min-height: unset; }
+            .info-panel { padding: 30px; min-height: 200px; }
+            .form-panel { padding: 30px; }
+        }
+        @media (max-width: 500px) {
+            .container { width: 100%; border-radius: 0; box-shadow: none; }
+            .form-panel, .info-panel { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="info-panel">
+        <h1>Join Asha</h1>
+        <p>Whether you need immediate assistance or want to offer your help, this is where your journey begins. Together, we are stronger.</p>
+    </div>
+    <div class="form-panel">
+        <h2>Create Your Account</h2>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Always visible fields -->
+            <div class="form-field">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="form-field">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+            </div>
+            <div class="form-field">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+            </div>
+            <div class="form-field">
+                {{ form.phone_number.label_tag }}
+                {{ form.phone_number }}
+            </div>
+
+            <!-- Volunteer-only fields -->
+            {% if role == "volunteer" %}
+                <div class="form-field">
+                    {{ form.full_name.label_tag }}
+                    {{ form.full_name }}
+                </div>
+                <div class="form-field">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                </div>
+                <div class="form-field">
+                    {{ form.skills_bio.label_tag }}
+                    {{ form.skills_bio }}
+                </div>
+            {% endif %}
+
+            <!-- Hidden role -->
+            <input type="hidden" name="role" value="{{ role }}">
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px;">
+            Already have an account?
+            <a href="{% url 'login' %}" style="color: var(--accent-green); text-decoration: none;">Login here</a>.
+        </p>
+    </div>
+</div>
+</body>
+</html>

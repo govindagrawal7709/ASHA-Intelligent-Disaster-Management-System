@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Alert - Asha Admin</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #ccc; margin-bottom: 20px;}
+        .header h1 { margin: 0; color: #2c3e50; }
+        .form-section, .alerts-list-section { background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 800px; margin: 20px auto; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; margin-top: 10px; }
+        button:hover { background-color: #0056b3; }
+        input[type="text"], textarea, select { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .alert-item { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+        .alert-item.High { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .alert-item.Critical { background-color: #dc3545; border-color: #dc3545; color: white; }
+        .alert-item.Low { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+        .alert-item strong { display: block; margin-bottom: 5px; }
+        .messages { list-style: none; padding: 10px; margin: 20px 0; border-radius: 5px; }
+        .messages li { margin-bottom: 5px; padding: 8px; border-radius: 3px; }
+        .messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .messages .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .messages .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Create New Alert</h1>
+        <div class="user-info">
+            Hello, {{ user.username }}
+            {% if user.is_superuser %}
+                (Admin)
+            {% elif user.groups.all %}
+                ({{ user.groups.all.0.name }})
+            {% endif %}
+            | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'volunteer_dashboard' %}">Volunteer Dashboard</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="form-section">
+        <h2>Post a New Alert</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Post Alert</button>
+        </form>
+    </div>
+
+    <div class="alerts-list-section">
+        <h2>Active Alerts</h2>
+        {% if active_alerts %}
+            {% for alert in active_alerts %}
+                <div class="alert-item {{ alert.severity }}">
+                    <strong>Severity: {{ alert.severity }}</strong>
+                    <p>{{ alert.message }}</p>
+                    <small>Posted by: {{ alert.posted_by }} on {{ alert.timestamp|date:"M d, Y H:i" }}</small>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No active alerts at the moment.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

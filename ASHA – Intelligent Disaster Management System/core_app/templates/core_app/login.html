@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Asha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- Global Variables (Matching Landing Page) --- */
+        :root {
+            --primary-dark: #2c3e50;      /* Trustworthy Navy */
+            --secondary-light: #ecf0f1;   /* Clean Off-White */
+            --accent-green: #f39c12;      /* Warm Orange/Gold */
+            --accent-dark: #e67e22;       /* Deeper Orange */
+            --bg-dark: #ffffff;           /* White Background */
+            --text-light: #ffffff;
+            --text-dark: #34495e;         /* Softer Dark Text */
+            --font-heading: 'Montserrat', sans-serif;
+            --font-body: 'Poppins', sans-serif;
+            --error-red: #E63946;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            width: 90%;
+            max-width: 1200px;
+            min-height: 700px;
+            background-color: var(--primary-dark);
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+
+        /* --- Info Panel --- */
+        .info-panel {
+            flex: 1;
+            background: linear-gradient(rgba(44,62,80,0.85), rgba(44,62,80,0.85)),
+                        url('https://source.unsplash.com/800x1200/?volunteer,helping') no-repeat center center/cover;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: var(--text-light);
+            text-align: center;
+        }
+        .info-panel h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            color: var(--accent-green);
+            margin-bottom: 20px;
+        }
+        .info-panel p {
+            font-size: 1.1rem;
+            color: var(--secondary-light);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* --- Form Panel --- */
+        .form-panel {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: var(--bg-dark);
+        }
+        .form-panel h2 {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-dark);
+        }
+        .form-panel a {
+            color: var(--accent-green);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .form-panel a:hover {
+            color: var(--accent-dark);
+        }
+
+        /* --- Form Fields --- */
+        form p {
+            margin-bottom: 20px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+        form input {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--secondary-light);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 5px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+        }
+        form input::placeholder {
+            color: var(--text-dark);
+            opacity: 0.6;
+        }
+
+        /* --- Errors --- */
+        form small {
+            color: var(--text-dark);
+            opacity: 0.7;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            display: block;
+        }
+        ul.errorlist {
+            color: var(--error-red);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            margin-bottom: 0;
+            list-style: none;
+            padding: 0;
+        }
+
+        /* --- Button --- */
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-green);
+            color: var(--text-light);
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+        }
+        button[type="submit"]:hover {
+            background-color: var(--accent-dark);
+            transform: translateY(-2px);
+        }
+
+        /* --- Django Messages --- */
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .messages li {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+        .messages .success { background-color: #d4edda; color: #155724; }
+        .messages .error { background-color: #f8d7da; color: #721c24; }
+        .messages .info { background-color: #d1ecf1; color: #0c5460; }
+        .messages .warning { background-color: #fff3cd; color: #856404; }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .container { flex-direction: column; min-height: unset; }
+            .info-panel { padding: 30px; min-height: 200px; }
+            .form-panel { padding: 30px; }
+        }
+        @media (max-width: 500px) {
+            .container { width: 100%; border-radius: 0; box-shadow: none; }
+            .form-panel, .info-panel { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="info-panel">
+            <h1>Welcome Back.</h1>
+            <p>Your efforts make a world of difference. Thank you for being a part of the Asha network.</p>
+        </div>
+        <div class="form-panel">
+            <h2>Login to Your Account</h2>
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" id="login-button">Login</button>
+            </form>
+            <p style="text-align: center; margin-top: 20px;">Don't have an account? <a href="{% url 'signup' %}">Register here</a>.</p>
+        </div>
+    </div>
+    <script>
+        // Optional: Change button text if volunteer logs in
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('role') === 'volunteer') {
+            document.getElementById('login-button').textContent = 'Volunteer Login';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asha - Hope in Crisis</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* --- GLOBAL STYLES & VARIABLES --- */
+
+/* OPTION 1: HOPEFUL SUNRISE */
+:root {
+    --primary-dark: #2c3e50;      /* Trustworthy Navy */
+    --secondary-light: #ecf0f1;   /* Clean Off-White */
+    --accent-green: #f39c12;      /* Warm Orange/Gold */
+    --accent-dark: #e67e22;       /* Deeper Orange */
+    --bg-dark: #ffffff;           /* Bright White Background */
+    --text-light: #ffffff;
+    --text-dark: #34495e;          /* Softer Dark Text */
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Poppins', sans-serif;
+}
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-light);
+            background-color: var(--bg-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            color: var(--text-light);
+            font-weight: 700;
+        }
+
+        section {
+            padding: 80px 5%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+         /* --- NAVBAR --- */
+/* --- NAVBAR --- */
+.navbar {
+    background-color: transparent;
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* CHANGED: box-shadow is now none initially */
+    box-shadow: none; 
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+    /* Ensure all relevant properties transition */
+    transition: background-color 0.4s ease, box-shadow 0.4s ease; 
+}
+
+/* Updated class */
+.navbar.scrolled {
+    background-color: var(--primary-dark);
+    /* ADDED: box-shadow appears only when scrolled */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+}
+
+/* ... rest of your CSS ... */
+
+/* ... rest of your CSS ... */
+
+        .navbar .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-green);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .navbar .logo i {
+            margin-right: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: 500;
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 5px 0;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--accent-green);
+            transform-origin: bottom right;
+            transition: transform 0.25s ease-out;
+        }
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+        .nav-links a:hover {
+            color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            filter: brightness(0.4); /* Darken video */
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(135deg, rgba(11,12,16,0.8) 0%, rgba(31,40,51,0.6) 100%);
+z-index: -1;
+}
+.emergency-banner {
+    background-color: #E63946; /* Urgent Red */
+    color: white;
+    text-align: center;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    position: sticky;
+    top: 0;
+    z-index: 3000; /* Highest z-index to be on top of everything */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.emergency-banner i {
+    margin-right: 15px;
+    animation: pulse 1.5s infinite; /* Attention-grabbing pulse animation */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Adjust navbar to account for banner */
+.navbar {
+    /* ... existing styles ... */
+    top: 0; /* Fallback */
+}
+/* When a banner exists, push the navbar down */
+body:has(.emergency-banner) .navbar {
+    top: 45px; /* Adjust this value to match your banner's height */
+}
+/* --- TESTIMONIAL SECTION --- */
+.testimonial-section {
+    background-color: var(--primary-dark);
+    color: var(--text-light);
+    text-align: center;
+    padding: 80px 5%;
+}
+.testimonial-section .container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.testimonial-section .fa-quote-left {
+    font-size: 3rem;
+    color: var(--accent-green);
+    opacity: 0.5;
+    margin-bottom: 20px;
+}
+.testimonial-section blockquote {
+    font-size: 1.8rem;
+    font-style: italic;
+    font-weight: 300;
+    line-height: 1.6;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+.testimonial-section cite {
+    display: block;
+    margin-top: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--secondary-light);
+}
+.hero-content {
+    z-index: 1;
+    max-width: 900px;
+    padding: 20px;
+}
+
+.hero-content h2 {
+    font-size: 4.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    text-shadow: 3px 3px 8px rgba(0,0,0,0.6);
+    line-height: 1.1;
+}
+
+.hero-content p {
+    font-size: 1.6rem;
+    font-weight: 300;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.cta-buttons a {
+    background-color: var(--accent-green);
+    color: var(--primary-dark);
+    text-decoration: none;
+    padding: 1.2rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    /* --- CHANGED: NO SHADOW IN REST POSITION --- */
+    box-shadow: none; 
+    border: 2px solid var(--accent-green);
+}
+
+.cta-buttons a.secondary {
+    background-color: transparent;
+    color: var(--accent-green);
+    border: 2px solid var(--accent-green);
+    /* --- CHANGED: NO SHADOW IN REST POSITION --- */
+    box-shadow: none; 
+}
+
+/* No change to the hover states, they will still have their strong shadows */
+.cta-buttons a:hover {
+    transform: translateY(-7px) scale(1.03);
+    box-shadow: 0 10px 30px rgba(102, 252, 241, 0.4); 
+}
+.cta-buttons a.secondary:hover {
+    background-color: var(--accent-green);
+    color: var(--primary-dark);
+    box-shadow: 0 10px 30px rgba(102, 252, 241, 0.4);
+}
+
+/* --- FEATURES SECTION --- */
+.features-section {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    text-align: center;
+    padding: 100px 5%;
+}
+
+.features-section h3 {
+    font-size: 3.2rem;
+    margin-bottom: 60px;
+    color: var(--accent-green);
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.feature-item {
+    background-color: var(--primary-dark);
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    text-align: center;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    border-bottom: 5px solid var(--accent-dark);
+}
+
+.feature-item:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    border-bottom-color: var(--accent-green);
+}
+
+.feature-item i {
+    font-size: 3.5rem;
+    color: var(--accent-green);
+    margin-bottom: 25px;
+    display: block;
+}
+
+.feature-item h4 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 15px;
+}
+
+.feature-item p {
+    font-size: 1rem;
+    color: var(--secondary-light);
+}
+
+/* --- FOOTER --- */
+.footer {
+    background-color: var(--primary-dark);
+    color: var(--secondary-light);
+    text-align: center;
+    padding: 30px 5%;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* --- MESSAGES (Improved Styling) --- */
+.messages {
+    list-style: none;
+    padding: 15px;
+    margin: 100px auto 20px auto; /* Adjust margin for fixed navbar */
+    border-radius: 8px;
+    max-width: 800px;
+    text-align: center;
+    font-weight: 600;
+    animation: fadeInOut 5s forwards; /* Fades out messages after a delay */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.messages li {
+    margin-bottom: 8px;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid transparent; /* default */
+}
+.messages .success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+.messages .error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+.messages .info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 992px) {
+    .hero-content h2 { font-size: 3.5rem; }
+    .hero-content p { font-size: 1.3rem; }
+    .cta-buttons { flex-direction: column; gap: 15px; }
+    .cta-buttons a { width: 80%; max-width: 300px; text-align: center; }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .nav-links {
+        margin-top: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .nav-links a {
+        margin: 5px 10px;
+    }
+    .hero-content h2 { font-size: 2.8rem; }
+    .hero-content p { font-size: 1.1rem; }
+    .features-section h3 { font-size: 2.5rem; }
+    .feature-item { padding: 30px 20px; }
+}
+
+@media (max-width: 480px) {
+    .navbar .logo { font-size: 1.5rem; }
+    .nav-links a { margin-left: 10px; font-size: 0.9rem; }
+    .hero-section h2 { font-size: 2.2rem; }
+    .hero-section p { font-size: 1rem; }
+    .cta-buttons a { padding: 1rem 1.8rem; font-size: 1rem; }
+    .features-section h3 { font-size: 2rem; }
+    .feature-item h4 { font-size: 1.5rem; }
+    .feature-item i { font-size: 2.5rem; }
+}
+    </style>
+</head>
+<body>
+    {% if emergency_alert %}
+    <div class="emergency-banner">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>CRITICAL ALERT:</strong> {{ emergency_alert.message }}
+    </div>
+    {% endif %}
+    <nav class="navbar">
+        <a href="{% url 'landing_page' %}" class="logo"><i class="fas fa-heartbeat"></i> A.S.H.A</a>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <a href="{% url 'volunteer_dashboard' %}">Volunteer Dashboard</a>
+                {% else %}
+                    <a href="{% url 'dashboard' %}">My Requests</a>
+                {% endif %}
+                <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout ({{ user.username }})</a>
+            {% else %}
+                <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="{% url 'signup' %}"><i class="fas fa-user-plus"></i> Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+<header class="hero-section">
+    <video autoplay loop muted playsinline poster="https://images.pexels.com/photos/6646917/pexels-photo-6646917.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="video-background">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-rescue-team-in-action-during-disaster-42289-large.mp4" type="video/mp4">
+        </video>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+    <h2>Hope in Action.</h2>        
+<p>Connecting urgent needs with immediate relief, when every second counts.</p>       
+<div class="cta-buttons">
+    {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}" class="button primary">Go to Dashboard</a>
+    {% else %}
+        <a href="{% url 'signup' %}?role=victim" class="button primary">I Need Urgent Help</a>
+        <a href="{% url 'signup' %}?role=volunteer" class="button secondary">I Want to Volunteer</a>
+    {% endif %}
+</div>
+
+    </div>
+</header>
+
+    <section class="features-section">
+        <div class="container">
+            <h3>How Asha Brings Hope to the Frontline</h3>
+            <div class="feature-grid">
+    <div class="feature-item">
+        <i class="fas fa-map-marked-alt"></i>
+        <h4>Request Help Instantly</h4>
+        <p>Victims can use an interactive map to submit precise, geo-tagged requests for medical aid, food, or rescue, ensuring help arrives exactly where it's needed.</p>
+    </div>
+    <div class="feature-item">
+        <i class="fas fa-users"></i>
+        <h4>Coordinate Responders</h4>
+        <p>Volunteers and admins get a real-time dashboard of all active requests. They can assign tasks and update statuses, creating an efficient and coordinated response.</p>
+    </div>
+    <div class="feature-item">
+        <i class="fas fa-broadcast-tower"></i>
+        <h4>Stay Informed & Safe</h4>
+        <p>Using a high-speed MongoDB backend, admins can instantly broadcast critical safety alerts and updates to everyone, ensuring community-wide awareness.</p>
+    </div>
+</div>
+        </div>
+    </section>
+    <footer class="footer">
+        &copy; 2026 Asha - Disaster Relief Management. All rights reserved.
+    </footer>
+    <script>
+        const navbar = document.querySelector('.navbar');
+        window.onscroll = () => {
+            if (window.scrollY > 50) { // Adds the class when you scroll more than 50px
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        };
+    </script>
+</body>
+</html>
+</body>
+</html>

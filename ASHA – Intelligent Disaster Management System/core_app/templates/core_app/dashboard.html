@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asha - Victim Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #ccc; }
+        .header h1 { margin: 0; color: #2c3e50; }
+        .header .user-info { font-size: 1.1em; }
+        .messages { list-style: none; padding: 10px; margin: 20px 0; border-radius: 5px; }
+        .messages li { margin-bottom: 5px; padding: 8px; border-radius: 3px; }
+        .messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .messages .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .messages .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .container { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 20px; }
+        .request-form-section, .requests-list-section { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .request-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px; background-color: #f9f9f9; }
+        .request-card h3 { margin-top: 0; color: #34495e; }
+        .request-card .status { font-weight: bold; padding: 3px 8px; border-radius: 3px; display: inline-block; margin-left: 10px; font-size: 0.85em; }
+        .status-Pending { background-color: #f0ad4e; color: white; }
+        .status-Assigned { background-color: #5bc0de; color: white; }
+        .status-EnRoute { background-color: #5cb85c; color: white; }
+        .status-Completed { background-color: #777; color: white; }
+        .status-Cancelled { background-color: #d9534f; color: white; }
+        #map { height: 300px; width: 100%; border-radius: 5px; margin-bottom: 15px; } /* New map style */
+        button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        button:hover { background-color: #218838; }
+        input[type="text"], textarea, input[type="number"], select { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Asha Dashboard</h1>
+        <div class="user-info">
+            Hello, {{ user.username }}! | <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{# Alerts Section #}
+{% if global_alerts %}
+    <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 5px;">
+        <h2>🚨 Urgent Alerts 🚨</h2>
+        {% for alert in global_alerts %}
+            <div style="margin-bottom: 10px; padding: 10px; border: 1px dashed #ccc; border-radius: 3px;">
+                <strong>{{ alert.severity }} Alert:</strong> {{ alert.message }}
+                <small>(Posted by {{ alert.posted_by }} at {{ alert.timestamp|date:"M d, Y H:i" }})</small>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+    <div class="container">
+        <div class="request-form-section">
+            <h2>Request Immediate Help</h2>
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.request_type.id_for_label }}">Request Type:</label>
+                    {{ form.request_type }}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">Description:</label>
+                    {{ form.description }}
+                </div>
+                
+                <div class="form-group">
+                    <label>Your Location:</label>
+                    <div id="map"></div> <button type="button" id="use-my-location">Use My Current Location</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.latitude.id_for_label }}">Latitude:</label>
+                    {{ form.latitude }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.longitude.id_for_label }}">Longitude:</label>
+                    {{ form.longitude }}
+                </div>
+
+                <button type="submit">Submit Request</button>
+            </form>
+        </div>
+
+        <div class="requests-list-section">
+            <h2>Your Active Requests</h2>
+            {% if user_requests %}
+                {% for request in user_requests %}
+                    <div class="request-card">
+                        <h3>{{ request.get_request_type_display }} <span class="status status-{{ request.status }}">{{ request.status }}</span></h3>
+                        <p><strong>Description:</strong> {{ request.description }}</p>
+                        <p><strong>Location:</strong> {{ request.latitude }}, {{ request.longitude }}</p>
+                        <p><strong>Submitted:</strong> {{ request.created_at|date:"M d, Y H:i" }}</p>
+                        {% if request.assigned_to_volunteer %}
+                            <p><strong>Assigned To:</strong> {{ request.assigned_to_volunteer.username }}</p>
+                        {% else %}
+                            <p><strong>Assigned To:</strong> Unassigned</p>
+                        {% endif %}
+                        </div>
+                {% endfor %}
+            {% else %}
+                <p>You have no active relief requests.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    
+    <script>
+        // Initialize the map - default to a central location (e.g., New Delhi)
+        const map = L.map('map').setView([28.6139, 77.2090], 10); // [lat, lng], zoom
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Add a marker that can be dragged
+        const marker = L.marker([28.6139, 77.2090], { draggable: true }).addTo(map);
+
+        // Function to update form fields based on marker position
+        function onDragEnd() {
+            const latLng = marker.getLatLng();
+            document.getElementById('id_latitude').value = latLng.lat.toFixed(6);
+            document.getElementById('id_longitude').value = latLng.lng.toFixed(6);
+        }
+        marker.on('dragend', onDragEnd);
+
+        // Function to set marker on map click
+        map.on('click', function(e) {
+            marker.setLatLng(e.latlng);
+            onDragEnd(); // Update form fields
+        });
+
+        // Function to get current location and center the map/marker
+        document.getElementById('use-my-location').addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    map.setView([lat, lng], 14); // Center map and zoom in
+                    marker.setLatLng([lat, lng]); // Move marker
+                    onDragEnd(); // Update form fields
+                }, () => {
+                    alert('Unable to retrieve your location. Please click on the map or drag the marker.');
+                });
+            } else {
+                alert('Geolocation is not supported by your browser. Please click on the map or drag the marker.');
+            }
+        });
+
+        // Optional: Set initial marker position to user's current location on load
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                map.setView([lat, lng], 13); // Center map and zoom in
+                marker.setLatLng([lat, lng]); // Move marker
+                onDragEnd(); // Pre-fill form fields
+            }, () => {
+                // If geolocation fails or denied, keep default
+            });
+        }
+        
+        // Initial call to set default coordinates in form fields
+        onDragEnd();
+
+    </script>
+</body>
+</html>

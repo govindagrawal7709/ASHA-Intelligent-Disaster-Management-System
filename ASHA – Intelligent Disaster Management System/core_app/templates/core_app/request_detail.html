@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details - Asha</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #ccc; margin-bottom: 20px;}
+        .header h1 { margin: 0; color: #2c3e50; }
+        .details-card { background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 800px; margin: auto; }
+        .details-card p { margin-bottom: 10px; line-height: 1.6; }
+        .details-card strong { color: #2c3e50; }
+        .status { font-weight: bold; padding: 5px 10px; border-radius: 4px; display: inline-block; margin-left: 10px; font-size: 0.9em; color: white; }
+        .status-Pending { background-color: #f0ad4e; }
+        .status-Assigned { background-color: #5bc0de; }
+        .status-EnRoute { background-color: #5cb85c; }
+        .status-Completed { background-color: #777; }
+        .status-Cancelled { background-color: #d9534f; }
+        .back-link { display: block; margin-top: 20px; text-align: center; }
+        .form-section { margin-top: 20px; padding-top: 20px; border-top: 1px dashed #eee; }
+        button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; margin-top: 10px; }
+        button:hover { background-color: #218838; }
+        select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; width: 100%; max-width: 200px; }
+
+        .messages { list-style: none; padding: 10px; margin: 20px 0; border-radius: 5px; }
+        .messages li { margin-bottom: 5px; padding: 8px; border-radius: 3px; }
+        .messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .messages .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .messages .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+        .btn-primary { display:inline-block; padding: 10px 15px; background:#007bff; color:#fff; text-decoration:none; border-radius:5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Request #{{ relief_request.id }} Details</h1>
+        <div class="user-info">
+            Hello, {{ user.username }}
+            {% if user.is_superuser %}(Admin){% elif user.groups.all %}({{ user.groups.all.0.name }}){% endif %}
+            | <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if user.is_superuser and relief_request.status == "Pending" %}
+        <div style="max-width: 800px; margin: 0 auto 12px auto; text-align:right;">
+            <a class="btn-primary" href="{% url 'auto_assign_request' relief_request.id %}">Auto-Assign Volunteer</a>
+        </div>
+    {% endif %}
+
+    <div class="details-card">
+        <p><strong>Requester:</strong> {{ relief_request.requester.username }}</p>
+        <p><strong>Request Type:</strong> {{ relief_request.get_request_type_display }}</p>
+        <p><strong>Description:</strong> {{ relief_request.description }}</p>
+        <p><strong>Location:</strong> {{ relief_request.latitude }}, {{ relief_request.longitude }}</p>
+        <p><strong>Current Status:</strong> <span class="status status-{{ relief_request.status }}">{{ relief_request.get_status_display }}</span></p>
+        <p><strong>Submitted At:</strong> {{ relief_request.created_at|date:"M d, Y H:i" }}</p>
+        <p><strong>Last Updated:</strong> {{ relief_request.updated_at|date:"M d, Y H:i" }}</p>
+        <p>
+            <strong>Assigned To:</strong>
+            {% if relief_request.assigned_to_volunteer %}
+                {{ relief_request.assigned_to_volunteer.username }}
+            {% else %}
+                Unassigned
+            {% endif %}
+        </p>
+
+        <div class="form-section">
+            <h3>Update Status</h3>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Update Status</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="back-link">
+        <a href="{% url 'volunteer_dashboard' %}">← Back to Volunteer Dashboard</a>
+    </div>
+</body>
+</html>

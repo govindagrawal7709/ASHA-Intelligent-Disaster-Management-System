@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Dashboard - Asha</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #ccc; }
+        .header h1 { margin: 0; color: #2c3e50; }
+        .header .user-info { font-size: 1.1em; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #34495e; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #ddd; }
+        .status { font-weight: bold; padding: 3px 8px; border-radius: 3px; display: inline-block; color: white; font-size: 0.85em; }
+        .status-Pending { background-color: #f0ad4e; }
+        .status-Assigned { background-color: #5bc0de; }
+        .status-EnRoute { background-color: #5cb85c; }
+
+    .btn { display:inline-block; padding: 6px 10px; border-radius: 4px; text-decoration:none; border: 1px solid transparent; font-size: 0.95em; cursor:pointer; }
+    .btn-primary { background:#007bff; color:#fff; }
+    .btn-link { color:#007bff; text-decoration:underline; border:none; background:transparent; padding:0; cursor:pointer; }
+    #locationStatus { margin-top:8px; font-size:0.9em; color:#555; }
+</style>
+
+</head>
+<body>
+    <div class="header">
+        <h1>Volunteer Dashboard</h1>
+        <div class="user-info">
+            Hello, {{ user.username }}
+            {% if user.is_superuser %}(Admin){% elif user.groups.all %}({{ user.groups.all.0.name }}){% endif %}
+            | <a href="{% url 'logout' %}">Logout</a>
+            <br><br>
+
+        <!-- ✅ Show current saved location -->
+        {% if profile.latitude and profile.longitude %}
+            <p>📍 Current Location: <b>{{ profile.latitude }}, {{ profile.longitude }}</b><br>
+            Last Updated: {{ profile.location_updated_at|date:"M d, Y H:i" }}</p>
+        {% else %}
+            <p>No location saved yet.</p>
+        {% endif %}
+
+        <button id="setLocationBtn" class="btn btn-primary">Set My Location</button>
+        <p id="locationStatus"></p>
+    </div>
+</div>
+
+{% if messages %}
+    <ul style="list-style:none; padding:0; margin:16px 0;">
+        {% for message in messages %}
+            <li style="margin:6px 0; padding:8px 12px; border-radius:4px;">
+                {{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if global_alerts %}
+    <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 5px;">
+        <h2>🚨 Urgent Alerts 🚨</h2>
+        {% for alert in global_alerts %}
+            <div style="margin-bottom: 10px; padding: 10px; border: 1px dashed #ccc; border-radius: 3px;">
+                <strong>{{ alert.severity }} Alert:</strong> {{ alert.message }}
+                <small>(Posted by {{ alert.posted_by }} at {{ alert.timestamp|date:"M d, Y H:i" }})</small>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if user.is_superuser %}
+    <p style="margin-top:12px;"><a class="btn-link" href="{% url 'create_alert' %}">Post New Alert</a></p>
+{% endif %}
+
+<h2>All Active Relief Requests</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Requester</th>
+            <th>Request Type</th>
+            <th>Status</th>
+            <th>Submitted At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in all_requests %}
+        <tr>
+            <td>{{ request.requester.username }}</td>
+            <td>{{ request.get_request_type_display }}</td>
+            <td><span class="status status-{{ request.status }}">{{ request.status }}</span></td>
+            <td>{{ request.created_at|date:"M d, Y H:i" }}</td>
+            <td>
+                <a class="btn-link" href="{% url 'request_detail' request.id %}">View Details</a>
+                {% if request.status == 'Pending' %}
+                    | <a class="btn-link" href="{% url 'assign_request' request.id %}">Assign to Me</a>
+                    {% if user.is_superuser %}
+                        | <a class="btn btn-primary" href="{% url 'auto_assign_request' request.id %}">Auto-Assign</a>
+                    {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No active relief requests.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+document.getElementById("setLocationBtn").addEventListener("click", () => {
+    const statusElem = document.getElementById("locationStatus");
+    if (!navigator.geolocation) {
+        statusElem.innerText = "Geolocation not supported by your browser.";
+        return;
+    }
+
+    statusElem.innerText = "Fetching location...";
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const formData = new FormData();
+            formData.append("latitude", pos.coords.latitude);
+            formData.append("longitude", pos.coords.longitude);
+
+            fetch("/update-location/", {
+                method: "POST",
+                body: formData,
+                credentials: "include"
+            })
+            .then(r => r.json())
+            .then(data => {
+                statusElem.innerText = data.message || "Location updated.";
+                setTimeout(() => location.reload(), 1200);
+            })
+            .catch(() => {
+                statusElem.innerText = "Error updating location.";
+            });
+        },
+        () => {
+            statusElem.innerText = "Unable to retrieve location.";
+        }
+    );
+});
+</script>
+
+
+</body>
+</html>
